@@ -15,39 +15,93 @@ public class main {
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
 
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
-            MongoCollection<Document> collection = database.getCollection("company"); // Replace with your collection name
-
-
-//            MongoCursor<Document> cursor = collection.find().iterator();
-//            while (cursor.hasNext()) {
-//                Document companyDocument = cursor.next();
-//                // Print entire document
-//                System.out.println("Company Details:");
-//                System.out.println(companyDocument.toJson());
-//                System.out.println("---------------------");
-//            }
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("company");
 
             Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Select an option:");
-            System.out.println("1. Login");
-            System.out.println("2. Register");
-            System.out.println("3. Exit");
-
-            int option = scanner.nextInt();
-
+            int option;
             company company = new company();
+            boolean exit = false;
 
-            switch (option) {
-                case 1:
-                    break;
-                case 2:
-                    company.registerCompany();
-                    break;
+            while (!exit) {
+                System.out.println("Select an option:");
+                System.out.println("1. Login");
+                System.out.println("2. Register");
+                System.out.println("3. Exit");
+
+                option = scanner.nextInt();
+
+                switch (option) {
+                    case 1:
+                        if (company.loginCompany()) {
+                            // Successful login
+                            System.out.println("Logged in successfully!");
+
+                            System.out.println("1. Add Employee");
+                            System.out.println("2. View Employee");
+                            System.out.println("3. Update Employee");
+                            System.out.println("4. Delete Employee");
+                            System.out.println("5. Exit");
+
+                            option = scanner.nextInt();
+
+                            switch (option) {
+                                case 1:
+                                    company.addEmployee();
+                                    break;
+                                case 2:
+//                                    company.viewEmployee();
+                                    break;
+                                case 3:
+//                                    company.updateEmployee();
+                                    break;
+                                case 4:
+//                                    company.deleteEmployee();
+                                    break;
+                                case 5:
+                                    exit = true;
+                                    System.out.println("Exiting...");
+                                    break;
+                                default:
+                                    System.out.println("Invalid option. Please select again.");
+                            }
+
+                        } else {
+                            System.out.println("Invalid username/password. Please try again.");
+                        }
+                        break;
+                    case 2:
+                        company.registerCompany();
+                        break;
+                    case 3:
+                        exit = true; // Exit the loop
+                        System.out.println("Exiting...");
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please select again.");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void menu(company company) {
+        System.out.println("1. Add Employee");
+        System.out.println("2. View Employee");
+        System.out.println("3. Update Employee");
+        System.out.println("4. Delete Employee");
+        System.out.println("5. Exit");
+
+        Scanner scanner = new Scanner(System.in);
+        int option = scanner.nextInt();
+
+        switch (option) {
+            case 1:
+                company.addEmployee();
+                break;
+            case 2:
         }
     }
 }
