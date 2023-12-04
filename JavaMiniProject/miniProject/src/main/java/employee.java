@@ -148,4 +148,40 @@ public class employee {
 
         }
     }
+
+    public void addHoursToEmployee(Long loggedInCompanyID) {
+
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
+            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter Employee ID: ");
+            int employeeID = scanner.nextInt();
+
+            Document query = new Document("EmployeeID", employeeID)
+                    .append("CompanyID", loggedInCompanyID);
+
+            Document employeeDocument = collection.find(query).first();
+
+            if (employeeDocument != null) {
+                System.out.println("Enter Hours Worked: ");
+                int hoursWorked = scanner.nextInt();
+
+                int currentHours = employeeDocument.getInteger("HoursWorked", 0); // Get current hours worked or default to 0 if not found
+                int updatedHours = currentHours + hoursWorked;
+
+                // Update the document with the new hours worked
+                collection.updateOne(query, new Document("$set", new Document("HoursWorked", updatedHours)));
+
+                System.out.println("Hours updated successfully!");
+            } else {
+                System.out.println("Employee not found.");
+            }
+        }
+    }
 }
+
+
