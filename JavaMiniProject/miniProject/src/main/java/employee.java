@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import java.util.Scanner;
 
@@ -24,10 +25,18 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
             MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
 
-            Scanner scanner = new Scanner(System.in);
+            Document maxEmployeeId = collection.find()
+                    .sort(Sorts.descending("EmployeeID"))
+                    .limit(1)
+                    .first();
 
-            System.out.println("Enter Employee ID: ");
-            employeeID = scanner.nextInt();
+            int nextEmployeeID = 1; // Default to 1 if no documents are found
+            if (maxEmployeeId != null) {
+                nextEmployeeID = maxEmployeeId.getInteger("EmployeeID") + 1;
+            }
+
+            Scanner scanner = new Scanner(System.in);
+            employeeID = nextEmployeeID;
             companyID = loggedInCompanyID;
             System.out.println("Enter Employee First Name: ");
             employeeFirstName = scanner.next();
@@ -56,4 +65,87 @@ public class employee {
         }
     }
 
+    public void viewEmployee(Long loggedInCompanyID) {
+
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
+            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+
+
+
+            MongoCursor<Document> cursor = collection.find().iterator();
+
+            while (cursor.hasNext()) {
+                Document employeeDocument = cursor.next();
+                if (employeeDocument.getLong("CompanyID") == loggedInCompanyID) {
+                    System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
+                    System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
+                    System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
+                    System.out.println("Salary Type: " + employeeDocument.getString("SalaryType"));
+                    System.out.println("Salary Amount: " + employeeDocument.getInteger("SalaryAmount"));
+                    System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
+                    System.out.println();
+                }
+            }
+        }
+    }
+
+    public void updateEmployee(Long loggedInCompanyID) {
+
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
+            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter Employee ID: ");
+            employeeID = scanner.nextInt();
+            System.out.println("Enter Employee First Name: ");
+            employeeFirstName = scanner.next();
+            System.out.println("Enter Employee Last Name: ");
+            employeeLastName = scanner.next();
+            System.out.println("Enter Salary Type: ");
+            salaryType = scanner.next();
+            System.out.println("Enter Salary Amount: ");
+            salaryAmount = scanner.nextInt();
+            System.out.println("Enter Hours Worked: ");
+            hoursWorked = scanner.nextInt();
+
+            Document employeeDocument = new Document("EmployeeID", employeeID)
+                    .append("CompanyID", loggedInCompanyID)
+                    .append("EmployeeFirstName", employeeFirstName)
+                    .append("EmployeeLastName", employeeLastName)
+                    .append("SalaryType", salaryType)
+                    .append("SalaryAmount", salaryAmount)
+                    .append("HoursWorked", hoursWorked);
+
+            collection.updateOne(employeeDocument, new Document("$set", employeeDocument));
+            System.out.println("Employee updated successfully!");
+
+        }
+    }
+
+    public void deleteEmployee(Long loggedInCompanyID) {
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
+            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+
+            //ask for emplyee id and delete emplyee id where employee id = employee id
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter Employee ID: ");
+            employeeID = scanner.nextInt();
+
+               Document employeeDocument = new Document("EmployeeID", employeeID)
+                        .append("CompanyID", loggedInCompanyID);
+
+                collection.deleteOne(employeeDocument);
+                System.out.println("Employee deleted successfully!");
+
+
+        }
+    }
 }
