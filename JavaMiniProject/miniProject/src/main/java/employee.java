@@ -217,8 +217,7 @@ public class employee {
 
     public void viewHoursOfEmployee(Long loggedInCompanyID) {
 
-        String connectionString = "mongodb+srv://salmaanakhtar:
-
+    }
 }
 
 
