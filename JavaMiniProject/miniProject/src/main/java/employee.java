@@ -97,33 +97,65 @@ public class employee {
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
 
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
-            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("employee");
             Scanner scanner = new Scanner(System.in);
+
             System.out.println("Enter Employee ID: ");
-            employeeID = scanner.nextInt();
-            System.out.println("Enter Employee First Name: ");
-            employeeFirstName = scanner.next();
-            System.out.println("Enter Employee Last Name: ");
-            employeeLastName = scanner.next();
-            System.out.println("Enter Salary Type: ");
-            salaryType = scanner.next();
-            System.out.println("Enter Salary Amount: ");
-            salaryAmount = scanner.nextInt();
-            System.out.println("Enter Hours Worked: ");
-            hoursWorked = scanner.nextInt();
+            int employeeID = scanner.nextInt();
 
-            Document employeeDocument = new Document("EmployeeID", employeeID)
-                    .append("CompanyID", loggedInCompanyID)
-                    .append("EmployeeFirstName", employeeFirstName)
-                    .append("EmployeeLastName", employeeLastName)
-                    .append("SalaryType", salaryType)
-                    .append("SalaryAmount", salaryAmount)
-                    .append("HoursWorked", hoursWorked);
+            // Find the employee details based on Employee ID
+            Document query = new Document("EmployeeID", employeeID)
+                    .append("CompanyID", loggedInCompanyID);
+            Document employeeDocument = collection.find(query).first();
 
-            collection.updateOne(employeeDocument, new Document("$set", employeeDocument));
-            System.out.println("Employee updated successfully!");
+            if (employeeDocument != null) {
+                // Display existing details
+                System.out.println("Existing Details:");
+                System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
+                System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
+                System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
+                System.out.println("Salary Type: " + employeeDocument.getString("SalaryType"));
+                System.out.println("Salary Amount: " + employeeDocument.getInteger("SalaryAmount"));
+                System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
 
+                // Allow user to edit details
+                System.out.println("Enter new Employee First Name (or press Enter to keep existing): ");
+                String newFirstName = scanner.nextLine().trim();
+                if (!newFirstName.isEmpty()) {
+                    employeeDocument.put("EmployeeFirstName", newFirstName);
+                }
+
+                System.out.println("Enter new Employee Last Name (or press Enter to keep existing): ");
+                String newLastName = scanner.nextLine().trim();
+                if (!newLastName.isEmpty()) {
+                    employeeDocument.put("EmployeeLastName", newLastName);
+                }
+
+                System.out.println("Enter new Salary Type (or press Enter to keep existing): ");
+                String newSalaryType = scanner.nextLine().trim();
+                if (!newSalaryType.isEmpty()) {
+                    employeeDocument.put("SalaryType", newSalaryType);
+                }
+
+                System.out.println("Enter new Salary Amount (or enter 0 to keep existing): ");
+                int newSalaryAmount = scanner.nextInt();
+                if (newSalaryAmount != 0) {
+                    employeeDocument.put("SalaryAmount", newSalaryAmount);
+                }
+
+                System.out.println("Enter new Hours Worked (or enter 0 to keep existing): ");
+                int newHoursWorked = scanner.nextInt();
+                if (newHoursWorked != 0) {
+                    employeeDocument.put("HoursWorked", newHoursWorked);
+                }
+
+                // Update the employee details
+                collection.replaceOne(query, employeeDocument);
+                System.out.println("Employee updated successfully!");
+            } else {
+                System.out.println("Employee not found!");
+            }
         }
     }
 
@@ -182,6 +214,11 @@ public class employee {
             }
         }
     }
+
+    public void viewHoursOfEmployee(Long loggedInCompanyID) {
+
+        String connectionString = "mongodb+srv://salmaanakhtar:
+
 }
 
 

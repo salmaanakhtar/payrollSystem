@@ -137,7 +137,7 @@ public class company {
         employee employee = new employee();
         main main = new main();
 
-//        employee.viewHoursOfEmployee(loggedInCompanyID);
+        employee.viewHoursOfEmployee(loggedInCompanyID);
         main.menu(this);
 
     }

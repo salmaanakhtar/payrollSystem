@@ -123,6 +123,15 @@ public class main {
                 company.deleteEmployee();
                 break;
             case 5:
+                company.addHoursToEmployee();
+                break;
+            case 6:
+                company.viewHoursOfEmployee();
+                break;
+            case 7:
+                company.generatePayroll();
+                break;
+            case 8:
                 System.out.println("Exiting...");
                 break;
             default:
