@@ -178,7 +178,6 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
             MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
 
-            //ask for emplyee id and delete emplyee id where employee id = employee id
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter Employee ID: ");
             employeeID = scanner.nextInt();
@@ -228,6 +227,62 @@ public class employee {
 
     public void viewHoursOfEmployee(Long loggedInCompanyID) {
 
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("employee");
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter Employee ID: ");
+
+            int employeeID = scanner.nextInt();
+
+            Document query = new Document("EmployeeID", employeeID)
+                    .append("CompanyID", loggedInCompanyID);
+
+            Document employeeDocument = collection.find(query).first();
+
+            if (employeeDocument != null) {
+                System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
+            } else {
+                System.out.println("Employee not found.");
+            }
+
+
+
+        }
+    }
+
+    public void generatePayroll(Long loggedInCompanyID) {
+
+        String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("employee");
+
+            //display number of employees and number of hours worked and total salary
+            MongoCursor<Document> cursor = collection.find().iterator();
+            int totalSalary = 0;
+            int totalHours = 0;
+            int totalEmployees = 0;
+
+            while (cursor.hasNext()) {
+                Document employeeDocument = cursor.next();
+                if (employeeDocument.getLong("CompanyID") == loggedInCompanyID) {
+                    totalEmployees++;
+                    totalHours += employeeDocument.getInteger("HoursWorked");
+                    totalSalary += employeeDocument.getInteger("SalaryAmount");
+                }
+            }
+
+            System.out.println("Total Employees: " + totalEmployees);
+            System.out.println("Total Hours: " + totalHours);
+            System.out.println("Total Salary: " + totalSalary);
+
+
+        }
     }
 }
 

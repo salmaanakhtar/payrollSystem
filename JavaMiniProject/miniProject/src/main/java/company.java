@@ -147,7 +147,7 @@ public class company {
         employee employee = new employee();
         main main = new main();
 
-//        employee.generatePayroll(loggedInCompanyID);
+        employee.generatePayroll(loggedInCompanyID);
         main.menu(this);
 
     }
