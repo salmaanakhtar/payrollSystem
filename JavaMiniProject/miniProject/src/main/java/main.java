@@ -35,7 +35,7 @@ public class main {
                 switch (option) {
                     case 1:
                         if (company.loginCompany()) {
-                            // Successful login
+
                             System.out.println("Logged in successfully!");
 
                             System.out.println("1. Add Employee");
@@ -87,7 +87,7 @@ public class main {
                         company.registerCompany();
                         break;
                     case 3:
-                        exit = true; // Exit the loop
+                        exit = true;
                         System.out.println("Exiting...");
                         break;
                     default:
@@ -104,7 +104,10 @@ public class main {
         System.out.println("2. View Employee");
         System.out.println("3. Update Employee");
         System.out.println("4. Delete Employee");
-        System.out.println("5. Exit");
+        System.out.println("5. Add Hours to Employee");
+        System.out.println("6. View Hours of Employee");
+        System.out.println("7. Generate Payroll");
+        System.out.println("8. Exit");
 
         Scanner scanner = new Scanner(System.in);
         int option = scanner.nextInt();

@@ -18,12 +18,22 @@ public class employee {
     public int salaryAmount;
     public int hoursWorked;
 
+    private void displayEmployee(Document employeeDocument) {
+        System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
+        System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
+        System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
+        System.out.println("Salary Type: " + employeeDocument.getString("SalaryType"));
+        System.out.println("Salary Amount: " + employeeDocument.getInteger("SalaryAmount"));
+        System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
+        System.out.println();
+    }
+
     public void addEmployee(Long loggedInCompanyID) {
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
 
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
-            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("employee");
 
             Document maxEmployeeId = collection.find()
                     .sort(Sorts.descending("EmployeeID"))
@@ -80,6 +90,7 @@ public class employee {
             while (cursor.hasNext()) {
                 Document employeeDocument = cursor.next();
                 if (employeeDocument.getLong("CompanyID") == loggedInCompanyID) {
+                    displayEmployee(employeeDocument);
                     System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
                     System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
                     System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
@@ -91,6 +102,7 @@ public class employee {
             }
         }
     }
+
 
     public void updateEmployee(Long loggedInCompanyID) {
 
@@ -186,8 +198,8 @@ public class employee {
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
 
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
-            MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
+            MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
+            MongoCollection<Document> collection = database.getCollection("employee");
 
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter Employee ID: ");
@@ -202,10 +214,9 @@ public class employee {
                 System.out.println("Enter Hours Worked: ");
                 int hoursWorked = scanner.nextInt();
 
-                int currentHours = employeeDocument.getInteger("HoursWorked", 0); // Get current hours worked or default to 0 if not found
+                int currentHours = employeeDocument.getInteger("HoursWorked", 0);
                 int updatedHours = currentHours + hoursWorked;
 
-                // Update the document with the new hours worked
                 collection.updateOne(query, new Document("$set", new Document("HoursWorked", updatedHours)));
 
                 System.out.println("Hours updated successfully!");

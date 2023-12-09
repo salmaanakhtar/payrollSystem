@@ -18,7 +18,7 @@ public class company {
 
     public Long loggedInCompanyID;
 
-    //create register function for company and connect to db again
+
     public void registerCompany() {
 
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
