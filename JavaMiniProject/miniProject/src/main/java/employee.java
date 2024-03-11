@@ -28,6 +28,7 @@ public class employee {
         System.out.println();
     }
 
+
     public void addEmployee(Long loggedInCompanyID) {
         String connectionString = "mongodb+srv://salmaanakhtar:salmaanakhtar@cluster0.wiuk2io.mongodb.net/?retryWrites=true&w=majority";
 
@@ -35,16 +36,19 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
             MongoCollection<Document> collection = database.getCollection("employee");
 
+            // Find the maximum Employee ID value currently in the database
             Document maxEmployeeId = collection.find()
                     .sort(Sorts.descending("EmployeeID"))
                     .limit(1)
                     .first();
 
-            int nextEmployeeID = 1; // Default to 1 if no documents are found
+            //Adds 1 to the maxEmployeeId to get the next Employee ID
+            int nextEmployeeID = 1;
             if (maxEmployeeId != null) {
                 nextEmployeeID = maxEmployeeId.getInteger("EmployeeID") + 1;
             }
 
+            //takes input from user
             Scanner scanner = new Scanner(System.in);
             employeeID = nextEmployeeID;
             companyID = loggedInCompanyID;
@@ -59,6 +63,7 @@ public class employee {
             System.out.println("Enter Hours Worked: ");
             hoursWorked = scanner.nextInt();
 
+            //creates a new document with the input from the user
             Document employeeDocument = new Document("EmployeeID", employeeID)
                     .append("CompanyID", companyID)
                     .append("EmployeeFirstName", employeeFirstName)
@@ -67,6 +72,7 @@ public class employee {
                     .append("SalaryAmount", salaryAmount)
                     .append("HoursWorked", hoursWorked);
 
+            //inserts the document into the database
             collection.insertOne(employeeDocument);
             System.out.println("Employee added successfully!");
 
@@ -87,17 +93,11 @@ public class employee {
 
             MongoCursor<Document> cursor = collection.find().iterator();
 
+            //displays all employees with the same companyID as the logged in company
             while (cursor.hasNext()) {
                 Document employeeDocument = cursor.next();
                 if (employeeDocument.getLong("CompanyID") == loggedInCompanyID) {
                     displayEmployee(employeeDocument);
-                    System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
-                    System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
-                    System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
-                    System.out.println("Salary Type: " + employeeDocument.getString("SalaryType"));
-                    System.out.println("Salary Amount: " + employeeDocument.getInteger("SalaryAmount"));
-                    System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
-                    System.out.println();
                 }
             }
         }
@@ -113,6 +113,7 @@ public class employee {
             MongoCollection<Document> collection = database.getCollection("employee");
             Scanner scanner = new Scanner(System.in);
 
+            // Enter the Employee ID to update
             System.out.println("Enter Employee ID: ");
             int employeeID = scanner.nextInt();
 
@@ -121,17 +122,13 @@ public class employee {
                     .append("CompanyID", loggedInCompanyID);
             Document employeeDocument = collection.find(query).first();
 
+            // If the employee is found, display the details and ask for new details
             if (employeeDocument != null) {
-                // Display existing details
-                System.out.println("Existing Details:");
-                System.out.println("Employee ID: " + employeeDocument.getInteger("EmployeeID"));
-                System.out.println("Employee First Name: " + employeeDocument.getString("EmployeeFirstName"));
-                System.out.println("Employee Last Name: " + employeeDocument.getString("EmployeeLastName"));
-                System.out.println("Salary Type: " + employeeDocument.getString("SalaryType"));
-                System.out.println("Salary Amount: " + employeeDocument.getInteger("SalaryAmount"));
-                System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
 
-                // Allow user to edit details
+                System.out.println("Existing Details:");
+                displayEmployee(employeeDocument);
+
+
                 System.out.println("Enter new Employee First Name (or press Enter to keep existing): ");
                 String newFirstName = scanner.nextLine().trim();
                 if (!newFirstName.isEmpty()) {
@@ -178,13 +175,17 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem"); // Replace with your database name
             MongoCollection<Document> collection = database.getCollection("employee"); // Replace with your collection name
 
+            // Enter the Employee ID to delete
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter Employee ID: ");
             employeeID = scanner.nextInt();
 
+
+                // Find the employee details based on Employee ID
                Document employeeDocument = new Document("EmployeeID", employeeID)
                         .append("CompanyID", loggedInCompanyID);
 
+               // Delete the employee details
                 collection.deleteOne(employeeDocument);
                 System.out.println("Employee deleted successfully!");
 
@@ -200,15 +201,18 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
             MongoCollection<Document> collection = database.getCollection("employee");
 
+            // Enter the Employee ID to update
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter Employee ID: ");
             int employeeID = scanner.nextInt();
 
+            // Find the employee details based on Employee ID
             Document query = new Document("EmployeeID", employeeID)
                     .append("CompanyID", loggedInCompanyID);
 
             Document employeeDocument = collection.find(query).first();
 
+            // If the employee is found, get hours worked and add to current amount
             if (employeeDocument != null) {
                 System.out.println("Enter Hours Worked: ");
                 int hoursWorked = scanner.nextInt();
@@ -233,6 +237,7 @@ public class employee {
             MongoDatabase database = mongoClient.getDatabase("payrollManagementSystem");
             MongoCollection<Document> collection = database.getCollection("employee");
 
+            // Enter the Employee ID to get details
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter Employee ID: ");
 
@@ -243,6 +248,7 @@ public class employee {
 
             Document employeeDocument = collection.find(query).first();
 
+            // If the employee is found, display the hours worked
             if (employeeDocument != null) {
                 System.out.println("Hours Worked: " + employeeDocument.getInteger("HoursWorked"));
             } else {
@@ -268,6 +274,7 @@ public class employee {
             int totalHours = 0;
             int totalEmployees = 0;
 
+            //Iterates through all employees and adds the hours and salary to the total
             while (cursor.hasNext()) {
                 Document employeeDocument = cursor.next();
                 if (employeeDocument.getLong("CompanyID") == loggedInCompanyID) {
@@ -277,6 +284,7 @@ public class employee {
                 }
             }
 
+            //displays the total number of employees, hours and salary
             System.out.println("Total Employees: " + totalEmployees);
             System.out.println("Total Hours: " + totalHours);
             System.out.println("Total Salary: " + totalSalary);
